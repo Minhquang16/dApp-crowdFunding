@@ -21,6 +21,10 @@ npx hardhat node
 
 ### 2. Deploy Smart Contract
 ```bash
+# Option 1: Use main deploy script
+npx hardhat run scripts/deploy.js --network localhost
+
+# Option 2: Use modules deploy script  
 npx hardhat run scripts/modules/deploy.js --network localhost
 ```
 
@@ -30,12 +34,24 @@ Cập nhật địa chỉ contract mới vào file `.env.local`:
 NEXT_PUBLIC_CONTRACT_ADDRESS=<địa_chỉ_contract_mới>
 ```
 
-### 4. Chạy Development Server
+**Hoặc tự động từ deployment.json:**
+```bash
+# Script sẽ tự động tạo deployment.json với contract address
+# Copy address từ console output hoặc file deployment.json
+```
+
+### 4. Tạo Test Data (Optional)
+```bash
+# Tạo một số campaigns mẫu để test
+node create-campaigns.js
+```
+
+### 5. Chạy Development Server
 ```bash
 npm run dev
 ```
 
-### 5. Truy cập ứng dụng
+### 6. Truy cập ứng dụng
 Mở trình duyệt và truy cập: `http://localhost:3000`
 
 ## Cấu hình MetaMask:
