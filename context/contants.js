@@ -1,6 +1,6 @@
 import  { ethers } from "ethers";
 import Web3Modal from "web3modal";
-import crowdFunding from './Crowdfunding.json';
+import crowdFunding from './CrowdFunding.json';
 
 //crowfunding marketplace 
 
