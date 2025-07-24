@@ -14,17 +14,29 @@ const index = () => {
     getDonations,
   } = useContext(CrowdFundingContext);
 
-  const [allcampaign, setAllcampaign] = useState(); 
-  const [usercampaign, setUsercampaign] = useState(); 
+  const [allcampaign, setAllcampaign] = useState([]); 
+  const [usercampaign, setUsercampaign] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
   async function fetchData() {
-    const allData = await getCampaigns();
-    const userData = await getUserCampaigns();
-    console.log("allData", allData);
-    console.log("userData", userData);
-    setAllcampaign(allData);
-    setUsercampaign(userData);
+    try {
+      setLoading(true);
+      const allData = await getCampaigns();
+      const userData = await getUserCampaigns();
+      console.log("allData", allData);
+      console.log("userData", userData);
+      
+      // Đảm bảo data luôn là array
+      setAllcampaign(Array.isArray(allData) ? allData : []);
+      setUsercampaign(Array.isArray(userData) ? userData : []);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setAllcampaign([]);
+      setUsercampaign([]);
+    } finally {
+      setLoading(false);
+    }
   }
   fetchData();
 }, []);
@@ -34,6 +46,14 @@ const index = () => {
     const [openModel, setOpenModel] = useState(false);
     const [donateCampaign, setDonateCampaign] = useState();
     console.log(donateCampaign);
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="text-xl">Loading campaigns...</div>
+      </div>
+    );
+  }
+
   return (
     <>
       <Hero titleData={titleData} createCampaign={createCampaign} />

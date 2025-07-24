@@ -16,7 +16,12 @@ const Card = ({allcampaign, setOpenModel, setDonate, title}) =>{
             <p className="py-16 text-2xl font-bold leading-5">{title}</p>
             <div className="grid gap-5 lg:grid-cols-3 sm:max-w-sm sm:mx-auto
             lg:max-w-full">
-                {allcampaign?.map((campaign, i)=>(
+                {!allcampaign || allcampaign.length === 0 ? (
+                    <div className="col-span-3 text-center py-8">
+                        <p className="text-gray-500 text-lg">No campaigns found</p>
+                    </div>
+                ) : (
+                    allcampaign.map((campaign, i)=>(
                 <div
                     onClick={() => (setDonate(campaign),setOpenModel(true))}
                     key={i+1}
@@ -48,7 +53,8 @@ const Card = ({allcampaign, setOpenModel, setDonate, title}) =>{
                         </div>
                     </div>
                 </div>
-                ))}
+                    ))
+                )}
             </div>
         </div>
     );

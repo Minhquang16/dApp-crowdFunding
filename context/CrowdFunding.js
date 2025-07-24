@@ -1,6 +1,7 @@
 import React ,{useState, useEffect } from "react";
-import Wenb3Modal from "web3modal"; 
+import Web3Modal from "web3modal"; 
 import {ethers} from "ethers";
+
 
 //internal import 
 
@@ -18,7 +19,7 @@ export const CrowdFundingProvider = ({ children}) =>{
 
     const createCampaign = async (campaign) =>{
         const {title, description, amount, deadline} = campaign;
-        const web3Modal = new Wenb3Modal();
+        const web3Modal = new Web3Modal();
         const connection = await web3Modal.connect();
         const provider = new ethers.providers.Web3Provider(connection);
         const signer = provider.getSigner();
@@ -44,59 +45,102 @@ export const CrowdFundingProvider = ({ children}) =>{
     };
 
     const getCampaigns = async () =>{
-        const provider = new ethers.providers.JsonRpcProvider();
-        const contract = fetchContract(provider);
+        try {
+            // Kiểm tra xem contract address có tồn tại không
+            if (!CrowdFundingAddress) {
+                console.error("Contract address is not defined");
+                return [];
+            }
 
-        const campaigns = await contract.getCampaigns();
+            const provider = new ethers.providers.JsonRpcProvider("RPC_URL");
+            const contract = fetchContract(provider);
 
-        const parsedCampaigns = campaigns.map((campaign,i)=>({
-            owner: campaign.owner,
-            title: campaign.title,
-            description: campaign.description,
-            target: ethers.utils.formatEther(campaign.target.toString()),
-            deadline: campaign.deadline.toNumber(),
-            amountCollected: ethers.utils.formatEther(
-                campaign.amountCollected.toString()
-            ),
-            pId: i,
+            const campaigns = await contract.getCampaigns();
+            console.log("Raw campaigns from contract:", campaigns);
 
-        }));
-        return parsedCampaigns;
+            if (!campaigns || campaigns.length === 0) {
+                console.log("No campaigns found");
+                return [];
+            }
+
+            const parsedCampaigns = campaigns.map((campaign,i)=>({
+                owner: campaign.owner,
+                title: campaign.title,
+                description: campaign.description,
+                target: ethers.utils.formatEther(campaign.target.toString()),
+                deadline: campaign.deadline.toNumber(),
+                amountCollected: ethers.utils.formatEther(
+                    campaign.amountCollected.toString()
+                ),
+                pId: i,
+            }));
+            
+            console.log("Parsed campaigns:", parsedCampaigns);
+            return parsedCampaigns;
+        } catch (error) {
+            console.error("Error fetching campaigns:", error);
+            return [];
+        }
     };
 
     const getUserCampaigns = async () =>{
-        const provider = new ethers.providers.JsonRpcProvider();
-        const contract = fetchContract(provider);
+        try {
+            // Kiểm tra xem contract address có tồn tại không
+            if (!CrowdFundingAddress) {
+                console.error("Contract address is not defined");
+                return [];
+            }
 
-        const allCampaigns = await contract.getCampaigns();
+            const provider = new ethers.providers.JsonRpcProvider("RPC_URL");
+            const contract = fetchContract(provider);
 
-        const accounts = await window.ethereum.request({
-            method: "eth_accounts",
-        });
-        const currentUser = accounts[0];
+            const allCampaigns = await contract.getCampaigns();
 
-        const filteredCampaigns = allCampaigns.filter(
-            (campaign) =>
-                campaign.owner.toLowerCase() === currentUser.toLowerCase()  
-            // lấy  địa chỉ ví động 
-        );
+            // Kiểm tra xem có MetaMask không
+            if (!window.ethereum) {
+                console.error("MetaMask is not installed");
+                return [];
+            }
 
-        const userData = filteredCampaigns.map((campaign, i)=>({
-            owner: campaign.owner,
-            title: campaign.title,
-            description: campaign.description,
-            target: ethers.utils.formatEther(campaign.target.toString()),
-            deadline: campaign.deadline.toNumber(),
-            amountCollected: ethers.utils.formatEther(
-                campaign.amountCollected.toString()
-            ),
-            pId: i,
-        }));
-        return userData;
+            const accounts = await window.ethereum.request({
+                method: "eth_accounts",
+            });
+            
+            if (!accounts || accounts.length === 0) {
+                console.log("No accounts connected");
+                return [];
+            }
+
+            const currentUser = accounts[0];
+
+            const filteredCampaigns = allCampaigns.filter(
+                (campaign) =>
+                    campaign.owner.toLowerCase() === currentUser.toLowerCase()  
+                // lấy  địa chỉ ví động 
+            );
+
+            const userData = filteredCampaigns.map((campaign, i)=>({
+                owner: campaign.owner,
+                title: campaign.title,
+                description: campaign.description,
+                target: ethers.utils.formatEther(campaign.target.toString()),
+                deadline: campaign.deadline.toNumber(),
+                amountCollected: ethers.utils.formatEther(
+                    campaign.amountCollected.toString()
+                ),
+                pId: i,
+            }));
+            
+            console.log("User campaigns:", userData);
+            return userData;
+        } catch (error) {
+            console.error("Error fetching user campaigns:", error);
+            return [];
+        }
     };
 
     const donate = async (pId, amount) =>{
-        const web3Modal = new Wenb3Modal();
+        const web3Modal = new Web3Modal();
         const connection = await web3Modal.connect();
         const provider = new ethers.providers.Web3Provider(connection);
         const signer = provider.getSigner();
@@ -111,7 +155,7 @@ export const CrowdFundingProvider = ({ children}) =>{
         return campaignData;
     };
     const getDonations = async(pId) =>{
-        const provider = new ethers.providers.JsonRpcProvider();
+        const provider = new ethers.providers.JsonRpcProvider("RPC_URL");
         const contract = fetchContract(provider);
 
         const donations = await contract.getDonators(pId);
