@@ -2,6 +2,7 @@ import React ,{useState, useEffect } from "react";
 import Web3Modal from "web3modal"; 
 import {ethers} from "ethers";
 
+
 //internal import 
 
 import { CrowdFundingABI, CrowdFundingAddress } from "./contants";
@@ -51,7 +52,7 @@ export const CrowdFundingProvider = ({ children}) =>{
                 return [];
             }
 
-            const provider = new ethers.providers.JsonRpcProvider("http://127.0.0.1:8545");
+            const provider = new ethers.providers.JsonRpcProvider("RPC_URL");
             const contract = fetchContract(provider);
 
             const campaigns = await contract.getCampaigns();
@@ -90,7 +91,7 @@ export const CrowdFundingProvider = ({ children}) =>{
                 return [];
             }
 
-            const provider = new ethers.providers.JsonRpcProvider("http://127.0.0.1:8545");
+            const provider = new ethers.providers.JsonRpcProvider("RPC_URL");
             const contract = fetchContract(provider);
 
             const allCampaigns = await contract.getCampaigns();
@@ -154,7 +155,7 @@ export const CrowdFundingProvider = ({ children}) =>{
         return campaignData;
     };
     const getDonations = async(pId) =>{
-        const provider = new ethers.providers.JsonRpcProvider();
+        const provider = new ethers.providers.JsonRpcProvider("RPC_URL");
         const contract = fetchContract(provider);
 
         const donations = await contract.getDonators(pId);
