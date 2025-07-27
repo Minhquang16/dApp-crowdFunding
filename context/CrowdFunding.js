@@ -52,7 +52,7 @@ export const CrowdFundingProvider = ({ children}) =>{
                 return [];
             }
 
-            const provider = new ethers.providers.JsonRpcProvider("RPC_URL");
+            const provider = new ethers.providers.JsonRpcProvider("SEPOLIA_RPC_URL");
             const contract = fetchContract(provider);
 
             const campaigns = await contract.getCampaigns();
@@ -91,7 +91,7 @@ export const CrowdFundingProvider = ({ children}) =>{
                 return [];
             }
 
-            const provider = new ethers.providers.JsonRpcProvider("RPC_URL");
+            const provider = new ethers.providers.JsonRpcProvider("SEPOLIA_RPC_URL");
             const contract = fetchContract(provider);
 
             const allCampaigns = await contract.getCampaigns();
@@ -155,7 +155,7 @@ export const CrowdFundingProvider = ({ children}) =>{
         return campaignData;
     };
     const getDonations = async(pId) =>{
-        const provider = new ethers.providers.JsonRpcProvider("RPC_URL");
+        const provider = new ethers.providers.JsonRpcProvider("SEPOLIA_RPC_URL");
         const contract = fetchContract(provider);
 
         const donations = await contract.getDonators(pId);
